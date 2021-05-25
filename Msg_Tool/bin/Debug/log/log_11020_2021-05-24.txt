@@ -1,0 +1,5 @@
+11:57:42 未能找到路径“C:\Users\admin\Desktop\msg_tool_zhao\Msg_Tool\bin\Debug\config\sys_conf.txt”的一部分。
+11:57:44 [testplayer]: 连接112.124.202.217:7911成功
+11:57:44 账户[0]登录，已登录账户数量：1
+11:57:44 “Assets._07.Network.RpcServer”的类型初始值设定项引发异常。
+11:57:44 [testplayer]: 连接112.124.202.217:7911失败

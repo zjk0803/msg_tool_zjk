@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FBF0819B-FBE7-4D07-B3DD-C4420E6A4C2F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Msg_Tool</RootNamespace>
+    <AssemblyName>Msg_Tool</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>.\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bit_Buffer.cs" />
+    <Compile Include="Byte_Buffer.cs" />
+    <Compile Include="Enum.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="Game_Manager.cs" />
+    <Compile Include="Msg_Parse.cs" />
+    <Compile Include="Msg_Struct.cs" />
+    <Compile Include="Endpoint.cs" />
+    <Compile Include="Msg_Tool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Msg_Tool.Designer.cs">
+      <DependentUpon>Msg_Tool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Player.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Struct_Manager.cs" />
+    <Compile Include="Thread_Manager.cs" />
+    <EmbeddedResource Include="Msg_Tool.resx">
+      <DependentUpon>Msg_Tool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\STS_Unity\Assembly-CSharp-Editor-firstpass.csproj">
+      <Project>{72ad07e6-37c8-00ed-cf50-916b22eb013c}</Project>
+      <Name>Assembly-CSharp-Editor-firstpass</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\Assembly-CSharp-Editor.csproj">
+      <Project>{8371f5eb-ed69-a0e7-0fac-66e42baa933a}</Project>
+      <Name>Assembly-CSharp-Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\Assembly-CSharp-firstpass.csproj">
+      <Project>{44b946fc-e4af-93dd-ca9b-8d8f0cf68856}</Project>
+      <Name>Assembly-CSharp-firstpass</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\Assembly-CSharp.csproj">
+      <Project>{dc2476d0-bb44-eb25-bea0-781fac01c175}</Project>
+      <Name>Assembly-CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\BakeryEditorAssembly.csproj">
+      <Project>{ba2910d7-7552-750b-e6e6-967889daef7b}</Project>
+      <Name>BakeryEditorAssembly</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\BakeryRuntimeAssembly.csproj">
+      <Project>{fc3f3b93-a897-101e-ff22-fa7e93fd27fe}</Project>
+      <Name>BakeryRuntimeAssembly</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\Coffee.UIParticle.csproj">
+      <Project>{86439eb3-edf3-bb2e-662e-45c41388b62c}</Project>
+      <Name>Coffee.UIParticle</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\Coffee.UIParticle.Editor.csproj">
+      <Project>{cf73e651-149e-c6c1-8690-f492ee69b879}</Project>
+      <Name>Coffee.UIParticle.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\MeshBakerCore.csproj">
+      <Project>{356ebb4a-f2bc-06e6-32a7-6c3c1b33c726}</Project>
+      <Name>MeshBakerCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\MeshBakerEditor.csproj">
+      <Project>{ee4c80e9-9a44-8a4f-a44d-d9aed3d3b4b9}</Project>
+      <Name>MeshBakerEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\NavMeshComponents.csproj">
+      <Project>{9ac634b6-a359-26dc-1217-31e1e2c56e41}</Project>
+      <Name>NavMeshComponents</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\NavMeshComponentsEditor.csproj">
+      <Project>{009f15a8-2722-dca0-4878-dafa5b001893}</Project>
+      <Name>NavMeshComponentsEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\NavMeshComponentsTestsEditmode.csproj">
+      <Project>{9fa37d99-3d38-a0a1-533c-b55fb0ae2eb3}</Project>
+      <Name>NavMeshComponentsTestsEditmode</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\NavMeshComponentsTestsPlaymode.csproj">
+      <Project>{dba56a9c-cc01-cb71-0ee8-2c3b94083b9d}</Project>
+      <Name>NavMeshComponentsTestsPlaymode</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\UniTask.Addressables.csproj">
+      <Project>{e5a0734d-ebfb-b635-ccfd-d52b4f8f3df5}</Project>
+      <Name>UniTask.Addressables</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\UniTask.csproj">
+      <Project>{9a5db20e-9343-cb74-b0cb-c6edb6a38940}</Project>
+      <Name>UniTask</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\UniTask.DOTween.csproj">
+      <Project>{d37ee451-dad8-2706-a1c8-72bc62cad899}</Project>
+      <Name>UniTask.DOTween</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\UniTask.Editor.csproj">
+      <Project>{61e9d145-dc53-714b-59a2-0dffd7cf044b}</Project>
+      <Name>UniTask.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\UniTask.Linq.csproj">
+      <Project>{dc6d94a8-52c2-d325-518d-489bdc6227dd}</Project>
+      <Name>UniTask.Linq</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\UniTask.TextMeshPro.csproj">
+      <Project>{78b459aa-39f1-010e-6d55-0f1f245803aa}</Project>
+      <Name>UniTask.TextMeshPro</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\STS_Unity\Unity.AssetBundleBrowser.Editor.csproj">
+      <Project>{8d63b8a4-25c5-3cc3-85d4-aa0f29d69f50}</Project>
+      <Name>Unity.AssetBundleBrowser.Editor</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

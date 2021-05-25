@@ -1,0 +1,7 @@
+16:11:15 未能找到路径“C:\Users\admin\Desktop\msg_tool_zhao\Msg_Tool\bin\Debug\config\sys_conf.txt”的一部分。
+16:11:20 没有该用户
+16:11:20 [0]: 连接112.124.202.217:7911成功
+16:11:20 账户[0]登录，已登录账户数量：1
+16:11:20 [0]: 向服务器发送了5字节数据
+16:11:20 引发类型为“Thrift.Transport.TTransportException”的异常。
+16:11:20 [0]: 连接112.124.202.217:7911失败

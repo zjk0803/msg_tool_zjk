@@ -1,0 +1,10 @@
+11:42:45 未能找到路径“C:\Users\admin\Desktop\msg_tool_zhao\Msg_Tool\bin\Debug\config\sys_conf.txt”的一部分。
+11:42:47 “Assets._07.Network.RpcServer”的类型初始值设定项引发异常。
+11:42:54 “Assets._07.Network.RpcServer”的类型初始值设定项引发异常。
+11:42:54 “Assets._07.Network.RpcServer”的类型初始值设定项引发异常。
+11:42:54 “Assets._07.Network.RpcServer”的类型初始值设定项引发异常。
+11:42:56 机器人开始登陆
+11:43:01 机器人开始下线
+11:43:02 没有机器人在运行
+11:43:17 “Assets._07.Network.RpcServer”的类型初始值设定项引发异常。
+11:43:19 “Assets._07.Network.RpcServer”的类型初始值设定项引发异常。

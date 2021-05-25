@@ -1,0 +1,5 @@
+12:00:48 未能找到路径“C:\Users\admin\Desktop\msg_tool_zhao\Msg_Tool\bin\Debug\config\sys_conf.txt”的一部分。
+12:00:49 [testplayer]: 连接112.124.202.217:7911成功
+12:00:49 账户[0]登录，已登录账户数量：1
+12:00:49 [testplayer]: 向服务器发送了14字节数据
+12:00:49 [testplayer]: 和112.124.202.217:7911的连接断开。。。。。。
