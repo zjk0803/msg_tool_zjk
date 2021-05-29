@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Game_Manager.cs
  *
  *  Created on: Dec 12, 2016
@@ -51,6 +51,10 @@ namespace Msg_Tool
         private List<Player> drop_list_ = new List<Player>();
         private object player_map_moni_ = new object();
         private object robot_run_moni_ = new object();
+        string steamUserId = "";
+        string steamName = "";
+        int steamLevel = 0;
+        bool steamValidateAuth = false;
 
         static public Game_Manager instance
         {
@@ -61,10 +65,22 @@ namespace Msg_Tool
                 return instance_;
             }
         }
-
+        public ServerConfig TestServer;
         private Game_Manager()
         {
+            //RpcServer.Instance.TestServer = new ServerConfig("112.124.202.217", 7911, 10000);
+            InitServer();
         }
+        private void InitServer()
+        {
+
+            //初始化游戏服务
+            TestServer = new ServerConfig("112.124.202.217", 7911, 10000);
+
+        }
+
+
+
 
         public int robot_num
         {
@@ -255,8 +271,11 @@ namespace Msg_Tool
             StartTestRPC();
             //RpcServer.Instance.Client.GetAchievement(int.Parse(role_name));
             //Test1(int.Parse(role_name));
-            GetDataTest1(10);
-            //RpcServer.Instance.Client.GetAchievement(DataManager.Instance.userId);//1
+            //GetDataTest(Convert.ToInt32(role_name));
+            //GetDataTest(1);
+            InitServer();
+            GetDataTest(1);
+            //RpcServer.Instance.Client.GetAchievement(1);//1
             if (player_ != null)
             {
                 player_map_.Remove(player_.end_point);
@@ -270,11 +289,102 @@ namespace Msg_Tool
              
             };
             player_ = new Player(role_name);
-        }
+            //bool respon = false;
+            //GetUserInfoByRPC();
+            //CallRpcRemoteThread(
+            //    () =>
+            //    {
+            //        respon = RpcServer.Instance.SteamClient.ValidateAuthTicket(role_name, steamUserId, steamName);
+            //    },
+            //    () =>
+            //    {
+            //        steamValidateAuth = respon;
+            //        if (respon)
+            //        {
+            //            Debug.Log("steam 用户登录验证 成功! steamId: " + steamUserId + " steamName: " + steamName);
+            //            SaveDataManager.Instance.steamId = steamUserId;
+            //            SaveDataManager.Instance.steamName = steamName;
+            //            MultipleAPIController.Instance.steamLoginResult = true;
+              
 
+            //        }
+            //        else
+            //        {
+            //            Debug.Log("steam 用户登录验证 失败!!");
+            //        }
+
+            //    //根据steamId结果 读取本地存档
+            //    //GetFilesNumList();
+            //    GetUserInfoByRPC();
+
+            //    }
+            //    , "ValidateAuthTicket"
+            //    , ERpcType.Steam
+            //    );
+
+        }
+        public GameObject[] fileObj;
+        Dictionary<int, Sts.SaveDataManagement.UserData> userDataList = new Dictionary<int, Sts.SaveDataManagement.UserData>();
+        private string testUserId = "";
+        void GetUserInfoByRPC()
+        {
+            string id;
+
+            steamUserId = "1";
+            id = steamUserId;
+            
+            
+            for (int i = 1; i < fileObj.Length; i++)
+            {
+                fileObj[i].SetActive(false);
+            }
+            userDataList.Clear();
+            List<LoginUserData> respon = null;
+            //BtnLock = false;
+            CallRpcRemoteThread(
+                   () =>
+                   {
+                       respon = RpcServer.Instance.Player_client.GetUserDataList(id);
+                   },
+
+                  () =>
+                  {
+                      if (respon.Count > 0)
+                      {
+                          for (int i = 0; i < respon.Count; i++)
+                          {
+                              Sts.SaveDataManagement.UserData userData = new Sts.SaveDataManagement.UserData();
+                              userData.bookExp = respon[i].BookExp;
+                              userData.userId = respon[i].UserId;
+                              userData.startTiming = respon[i].StartTiming;
+                              userData.name = respon[i].SteamName;
+                              //serverTime = respon[i].ServerTime;
+                              userDataList.Add(i, userData);
+                          }
+
+                          for (int i0 = 0; i0 < userDataList.Count; i0++)//为每个存档进行更新
+                      {
+                              if (i0 >= 3)
+                                  break;
+                          // if (FilesIndex.Contains(i0))
+                          
+                              fileObj[i0].SetActive(true);  
+                          // else
+                          //     ClearFile(i0);
+                      }
+                          //butTrs.localPosition = new Vector3(butTrs.localPosition.x, userDataList.Count == 1 ? 13 : (userDataList.Count == 2 ? -236 : -463));
+                      }
+                  });
+
+
+        }
         public void StartTest()
         {
             List<int> useridList = new List<int>();
+            for (int i = 0; i < 10; i++) {
+                useridList.Add(i);
+            }
+
             for (int i = 0; i < useridList.Count; i++)
             {
                 GetDataTest(useridList[i]);
@@ -283,35 +393,76 @@ namespace Msg_Tool
 
         public void GetDataTest(int userid)
         {
-           
-            RpcServer.Instance.Client.GetAchievement(userid);//1
-            RpcServer.Instance.Client.GetPlayerTalent(userid);//1
-            RpcServer.Instance.Client.GetAccelerateRemainTime(userid);
-            RpcServer.Instance.Hero_client.GetHeroSkillData(userid);
-            RpcServer.Instance.Client.GetMonthCardRemainTime(userid);
-            RpcServer.Instance.Client.GetCargoList(userid);
-            RpcServer.Instance.Client.GetAchievement(userid);
-            RpcServer.Instance.Item_client.GetItemList(userid);
-            RpcServer.Instance.Equip_client.GetEquipmentList(userid);
-            RpcServer.Instance.Hero_client.GetHeroDataList(userid);
-            RpcServer.Instance.Client.GetMainTaskList(userid);
-            RpcServer.Instance.Client.GetDailyTask(userid);
-            RpcServer.Instance.Client.GetGuideData(userid);
-            RpcServer.Instance.Client.GetGuideTask(userid);
-            RpcServer.Instance.Client.GetBasicPlotData(userid);
-            RpcServer.Instance.Client.GetDailyBonus(userid);
-            RpcServer.Instance.Guild_client.GetGuildInitInfo(userid);
-            RpcServer.Instance.Build_Client.GetBuildingList(userid);
-            RpcServer.Instance.Client.GetAllSupportHeroData(userid);
-            //RpcServer.Instance.Story_client.GetChapterAcquiredChestData(DataManager.Instance.userId, chapter);
-            RpcServer.Instance.Client.GetMazeInfo(userid);
-            RpcServer.Instance.Actionpoint_client.GetActionPoint(userid);
-            RpcServer.Instance.Story_client.GetExperienceInfo(userid);
-            //RpcServer.Instance.Story_client.GetNpcTaskList(userid, int.Parse(StoryDatamanager.instance.storyID[1]));
-            RpcServer.Instance.Client.GetLeaderSkill(userid);
-            RpcServer.Instance.Story_client.GetHeroFavour(userid);
-            RpcServer.Instance.Crusade_client.GetCrusadeData(userid);
 
+
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetAchievement(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetPlayerTalent(userid);
+            }, () => { }); CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetAccelerateRemainTime(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Hero_client.GetHeroSkillData(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetMonthCardRemainTime(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Item_client.GetItemList(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Equip_client.GetEquipmentList(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Hero_client.GetHeroDataList(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetMainTaskList(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetDailyTask(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetGuideData(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetGuideTask(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetBasicPlotData(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetDailyBonus(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Guild_client.GetGuildInitInfo(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Build_Client.GetBuildingList(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetAllSupportHeroData(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetMazeInfo(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Actionpoint_client.GetActionPoint(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Story_client.GetExperienceInfo(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Client.GetLeaderSkill(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Story_client.GetHeroFavour(userid);
+            }, () => { });
+            CallRpcRemoteThread(() => {
+                RpcServer.Instance.Crusade_client.GetCrusadeData(userid);
+            }, () => { });
 
 
         }
@@ -319,8 +470,12 @@ namespace Msg_Tool
         {
            CallRpcRemoteThread(() => {
                 RpcServer.Instance.Client.GetAchievement(userid);
-                }, () => { });
+                //RpcServer.Instance.Client.LoginPlus(1,"1","1",1);
+                }, () => {
+                    
+                });
         }
+
 
         public void connect(string ip, int port)
         {
@@ -345,7 +500,7 @@ namespace Msg_Tool
                 if (!player_map_.ContainsValue(p))
                 {
                     player_map_.Add(p.end_point, p);
-                    Log.debug_log("账户[" + p.userid + "]登录，已登录账户数量：" + player_map_.Count.ToString());
+                    Log.debug_log("账户[" + steamUserId + "]登录，已登录账户数量：" + player_map_.Count.ToString());
                 }
             }
         }
@@ -357,7 +512,7 @@ namespace Msg_Tool
                 if (player_map_.ContainsValue(p))
                 {
                     player_map_.Remove(p.end_point);
-                    Log.debug_log("账户[" + p.userid + "]下线，还剩余账户数量：" + player_map_.Count.ToString());
+                    Log.debug_log("账户[" + steamUserId + "]下线，还剩余账户数量：" + player_map_.Count.ToString());
                 }
             }
         }
@@ -545,18 +700,7 @@ namespace Msg_Tool
         //modify by qc 增加rpc单一锁.禁止部分消息频繁调用
         public void CallRpcRemoteThread(Action action, Action callback, string method_lock = "", ERpcType rpcType = ERpcType.Sts)
         {
-            if (method_lock.Length > 0)
-            {
-                if (method_lock_list.Contains(method_lock))
-                {
-                    return;
-                }
-                else
-                {
-                    method_lock_list.Add(method_lock);
-                }
-
-            }
+ 
 
             //安全锁 确保callbackAction  消息队列一致性
             eventWait.WaitOne();
@@ -636,13 +780,14 @@ namespace Msg_Tool
         void CallRpcMethod(Action action, ERpcType rpcType)
         {
             retCode = RpcServer.Instance.CallRpcRemote(rpcAction, serverName);
+
             if (retCode == 0)
             {
                 //Debug.Log("通信成功 0 " + callbackAction.ToString());
                 respone.ResponSucc();
             }
             else if (retCode > 0)
-            {
+            
                 //Debug.LogError("通信失败 retCode : " + retCode);
                 respone.ResponFail();//网络连接失败
             }
@@ -654,4 +799,4 @@ namespace Msg_Tool
 
 
     }
-}
+
