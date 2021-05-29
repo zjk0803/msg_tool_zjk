@@ -1,0 +1,362 @@
+using Sts.Utils;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml;
+using thrift.steam;
+using thrift.sts;
+using Thrift.Protocol;
+using Thrift.Transport;
+using UnityEngine;
+using XmlReader = Sts.Utils.XmlReader;
+
+namespace Assets._07.Network
+{
+
+    public enum ERpcType
+    {
+        Sts = 0,
+        Steam
+    };
+
+    public struct ServerConfig
+    {
+        private string ip;
+        private int port;
+        public TFramedTransport transport;
+        public TProtocol protocol;
+        public int timeout;
+
+        public ServerConfig(string _ip, int _port,int _timeout)
+        {
+            ip = _ip;
+            port = _port;
+            timeout = _timeout;
+            transport = new TFramedTransport(new TSocket(ip, port, timeout));
+            protocol = new TBinaryProtocol(transport);
+        }
+
+        public void DisposeThrfit()
+        {
+            try
+            {
+                //释放旧的连接
+                if (transport != null)
+                {
+                    if (transport.IsOpen)
+                        transport.Close();
+                    transport.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                //Debug.LogError("Net Error: " + ex.Data + " " + ex.Message);
+                //throw;
+            }
+        }
+
+        public void ResetThrfitSocket()
+        {
+
+            DisposeThrfit();
+            //开启新的连接
+            transport = new TFramedTransport(new TSocket(ip, port, timeout));
+            protocol = new TBinaryProtocol(transport);
+        }
+    }
+
+    public class RpcServer
+    {
+
+        /// <summary>
+        /// 单例对象
+        /// </summary>
+        private static RpcServer instance = new RpcServer();                                
+        /// <summary>
+        /// 获取单例对象
+        /// </summary>
+        public static RpcServer Instance
+        {
+            get { return instance; }                
+        }
+
+
+        //是否需要网络        
+        public bool bNeedNetServer = true;
+
+        private UI_NetServerController netServerController;
+
+        //获取don't Destro的 RPC通信controller
+        public UI_NetServerController netServerControll
+        {
+            get
+            {
+                if (netServerController == null)
+                {
+                    netServerController = GameObject.Find("UI_NetServer").GetComponent<UI_NetServerController>();
+                }
+                //if (netServerController == null)
+                    //Debug.Log("netserverCtroll还是空的");
+                return netServerController;
+            }
+        }
+
+        //服务端ip 端口
+        private ServerConfig StsServer;
+        private ServerConfig SteamServer;
+        public ServerConfig TestServer;
+        //socket 超时时间
+        const int SetTimeout = 10000;
+
+        //private string ip = "47.100.197.222"; //公司测试服地址
+        ////private string ip = "localhost"; //本机地址
+
+        //private int port = 7911;
+
+        //private TFramedTransport transport;
+        //private TProtocol protocol;
+
+        #region 注册服务
+        private StsService.Client m_client;
+        private SteamService.Client m_steamClient;
+        private BuildService.Client m_build_client;
+        private HeroService.Client m_hero_client;
+        private PlayerService.Client m_player_client;
+        private EquipService.Client m_equip_client;
+        private GuildService.Client m_guild_client;
+        private FriendService.Client m_friend_client;
+        private ItemService.Client m_item_client;
+        private CargoService.Client m_cargo_client;
+        private ActionPointService.Client m_actionpoint_client;
+        private StoryService.Client m_story_client;
+        private CrusadeService.Client m_crusade_client;
+        private TowerService.Client m_tower_client;
+
+        public StsService.Client Client { get { return m_client; } }
+        public SteamService.Client SteamClient { get { return m_steamClient; } }
+
+        public BuildService.Client Build_Client { get { return m_build_client; } }
+        public HeroService.Client Hero_client { get => m_hero_client; }
+        public PlayerService.Client Player_client { get => m_player_client; }
+        public EquipService.Client Equip_client { get => m_equip_client; }
+        public GuildService.Client Guild_client { get => m_guild_client; }
+        public FriendService.Client Friend_client { get => m_friend_client; }
+        public ItemService.Client Item_client { get => m_item_client; }
+        public CargoService.Client Cargo_client { get => m_cargo_client; }
+        public ActionPointService.Client Actionpoint_client{ get => m_actionpoint_client; }
+        public StoryService.Client Story_client { get => m_story_client; }
+        public CrusadeService.Client Crusade_client { get => m_crusade_client; }
+
+        public TowerService.Client Tower_client { get => m_tower_client; }
+
+        #endregion
+
+        private string config_path = "config_qhs.xml";
+        string tmpIp;
+        private RpcServer()
+        {
+            //string tmpIp = "47.100.197.222";//公司测试服地址
+            //string tmpIp = "192.168.28.17";//大师服地址
+
+
+            InitServer();
+
+        }
+
+
+        /// <summary>
+        /// 初始化thrift服务连接
+        /// </summary>
+        private void InitServer()
+        {
+
+            //初始化游戏服务
+            TestServer = new ServerConfig("112.124.202.217", 7911, 10000);
+
+            //StsServer = new ServerConfig(tmpIp, 7911, SetTimeout);
+            TMultiplexedProtocol tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "StsService");
+            m_client = new StsService.Client(tMultiplexedProtocol);
+            //初始化建筑service
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "buildService");
+            m_build_client = new BuildService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "heroService");
+            m_hero_client = new HeroService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "playerService");
+            m_player_client = new PlayerService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "equipService");
+            m_equip_client = new EquipService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "guildService");
+            m_guild_client = new GuildService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "friendService");
+            m_friend_client = new FriendService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "itemService");
+            m_item_client = new ItemService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "cargoService");
+            m_cargo_client = new CargoService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "actionPointService");
+            m_actionpoint_client = new ActionPointService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "storyService");
+            m_story_client = new StoryService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "crusadeService");
+            m_crusade_client = new CrusadeService.Client(tMultiplexedProtocol);
+            tMultiplexedProtocol = new TMultiplexedProtocol(StsServer.protocol, "towerService");
+            m_tower_client = new TowerService.Client(tMultiplexedProtocol);
+
+
+            //steam游戏服务
+            if (TestServer.transport!=null && TestServer.transport.IsOpen)
+            {
+                TestServer.transport.Close();
+                TestServer.transport.Dispose();
+            }
+            TestServer = new ServerConfig("112.124.202.217", 7911, 10000);
+            m_steamClient = new SteamService.Client(TestServer.protocol);
+        }
+
+
+        /// <summary>
+        /// 释放并重置 sts thrfit连接 
+        /// </summary>
+        public void ResetStsThrfit()
+        {
+            //Debug.LogError("释放并重置 thrfit连接");
+            StsServer.ResetThrfitSocket();
+            InitServer();
+        }
+
+        public void CloseStsThrfit()
+        {
+            StsServer.DisposeThrfit();
+        }
+
+        public Dictionary<string, string> ReadXmlStr(string xmldata)
+        {
+            Dictionary<string, string> xmlDic = new Dictionary<string, string>();
+
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(xmldata);
+            XmlNodeList nodeList = xmlDoc.SelectSingleNode("root").ChildNodes;
+            //遍历每一个节点，拿节点的属性以及节点的内容
+            try
+            {
+
+                foreach (XmlElement x1 in nodeList)
+                {
+                    xmlDic[x1.Name] = x1.InnerText;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                //Debug.LogError(ex.Message);
+            }
+
+
+            return xmlDic;
+        }
+
+        private float CallTimeSum = 0f;
+        private int CallTimeCount = 0;
+
+        /// <summary>
+        /// 远程调用服务端方法 阻塞       
+        /// </summary>
+        /// <param name="action"> 委托的PRC调用方法</param>
+        /// <returns>Rpc调用结果 0 成功</returns>
+        public int CallRpcRemote(Action action, ERpcType rpcType)
+        {
+
+            int retCode = 0;
+            ServerConfig server;
+            server = TestServer;
+            //Debug.Log("开始远程调用RPC方法");
+            try
+            {
+                long passTime = DateTime.Now.Ticks;
+                if (!server.transport.IsOpen || !server.Equals(TestServer))
+                {
+                    //Debug.Log("open socket");
+                    server.transport.Open();
+                }
+                
+                //Debug.LogError("transport open!");
+                action.Invoke();
+                float passTimeCur = (DateTime.Now.Ticks - passTime)/10000000f;
+                //Debug.Log($"<Color=orange>本次通讯耗时{passTimeCur}</Color>");
+                //CallTimeSum+= passTimeCur;
+                //CallTimeCount++;
+                //Debug.Log($"<Color=blue>平均耗时{CallTimeSum/ CallTimeCount}</Color>");
+            }
+            catch (DataException x)
+            {
+                //Debug.LogError("rpcException : " + x.Message + " " + x.CallStack);
+                retCode = 1;
+
+            }
+            catch(TTransportException x)
+            {
+                //Debug.LogError(x.Message + " " + x.ToString());
+                retCode = 2;
+            }
+            catch(Thrift.TApplicationException x)
+            {
+                //Debug.LogError("thrfit 应用层错误 ");
+                //Debug.LogError(x.Message + " " + x.ToString());
+                retCode = 4;
+            }
+            catch(Exception x)
+            {
+                //Debug.LogError(x.Message + " " + x.ToString());
+                retCode = 3;
+            }
+            finally
+            {
+                if(!server.Equals(StsServer))
+                server.transport.Close();
+                //Debug.LogError("transport 暂时不 close!");
+            }
+            //Debug.Log("结束远程调用RPC方法");
+            return retCode;
+        }
+    }
+
+
+    public class RpcRespone
+    {
+        public enum RpcResponStatus
+        {
+            Start,
+            Succ,
+            Fail,
+            Idel
+        }
+        private RpcResponStatus retStauts= RpcResponStatus.Idel;
+
+        public void StartRespon()
+        {
+            retStauts = RpcResponStatus.Start;
+        }
+
+        public void ResponSucc()
+        {
+            retStauts = RpcResponStatus.Succ;
+        }
+
+        public void ResponFail()
+        {
+            retStauts = RpcResponStatus.Fail;
+        }
+
+        public void ResponIdle()
+        {
+            retStauts = RpcResponStatus.Idel;
+        }
+
+        public bool Check(RpcResponStatus status)
+        {
+            return retStauts.Equals(status);
+        }
+    }
+}
