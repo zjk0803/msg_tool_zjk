@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Endpoint.cs
  *
  *  Created on: Dec 12, 2016
@@ -21,6 +21,7 @@ namespace Msg_Tool
 {
     class Endpoint
     {
+        //static private Endpoint instance_ = null;
         private bool connect_status_ = false;
         private Socket socket_ = null;
         private Player player_ = null;
@@ -82,15 +83,7 @@ namespace Msg_Tool
                 IPEndPoint remote = new IPEndPoint(IPAddress.Parse(ip_), port_);      //远程服务器端地址； 
                 socket_ = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 socket_.BeginConnect(remote, connect_callback, this);              //调用connect方法连接远端服务器；
-               
-                
-
-
-
-
-
-
-                return true;
+               return true;
             }
             catch (Exception ex)
             {
@@ -98,6 +91,20 @@ namespace Msg_Tool
                 return false;
             }
         }
+        //static public Endpoint instance
+        //{
+        //    get
+        //    {
+        //        if (instance_ == null)
+        //            instance_ = new Endpoint();
+        //        return instance_;
+        //    }
+        //}
+        ////private Endpoint()
+        ////{
+        ////    RpcServer.Instance.TestServer = new ServerConfig("112.124.202.217", 7911, 10000);
+
+        ////}
 
 
         static private void connect_callback(IAsyncResult ar)
@@ -132,7 +139,7 @@ namespace Msg_Tool
 
         public bool disconnect()
         {
-            RpcServer.Instance.netServerControll.AbortTestRPC();
+            //RpcServer.Instance.netServerControll.AbortTestRPC();
             if (connect_status_)
             {
                 connect_status_ = false;
